@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 import db
 
 
-app = Flask("__name__")
+app = Flask(__name__)
 
 @app.route("/")
 def index():
