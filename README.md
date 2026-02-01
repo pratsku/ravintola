@@ -9,21 +9,22 @@
 - Käyttäjä pystyy valitsemaan ravintolalle yhden tai useamman luokan (esimerkiksi keittiötyyppi, hintataso tai erityisruokavaliot).
 
 # Välipalautus 2 - 1.2.2026
-Sovelluksen ominaisuudet ja toiminnot:
+Sovelluksen ominaisuudet:
 - Käyttäjän rekisteröityminen ja kirjautuminen
 - Ravintoloiden lisääminen nimellä, kuvauksella, sijainnilla ja yhdellä luokalla (keittiötyyppi)
 - Ravintoloiden muokkaaminen ja poistaminen vain, jos olet omistaja
 - Kaikkien ravintoloiden ja tietojen tarkastelu
 - Ravintoloiden haku avainsanan, sijainnin ja keittiön/luokan mukaan
 
-# Sovelluksen asennus:
+--- Sovelluksen asennus ---
 Asenna flask-kirjasto:
 
 $ pip install flask
 
-Luo tarvittaessa virtuaaliympäristö:
+Voit luoda tarvittaessa virtuaaliympäristö:
 
 $ python3 -m venv venv
+
 $ source venv/bin/activate
 
 Luo tietokannan taulut SQL-skeemasta:
@@ -34,7 +35,7 @@ Voi käynnistää sovelluksen näin:
 
 $ flask run
 
-# Käyttö
+--- Sovelluksen käyttö ---
 - Rekisteröidy käyttäjäksi sivulla ”Luo tunnus”
 - Kirjaudu sisään ja lisää ravintola sivulla ”Lisää ravintola”
 - Kun lisäät kategorian, anna yksi kategorian nimi (esim. italialainen)
