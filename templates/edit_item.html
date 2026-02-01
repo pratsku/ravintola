@@ -2,22 +2,30 @@
 <html>
 
 <head>
-  <title>Ilmoituksen muokkaus</title>
+  <title>Muokkaa ravintolaa</title>
 </head>
 
 <body>
-  <h1>Ilmoituksen muokkaus</h1>
+  <h1>Muokkaa ravintolaa</h1>
   <form action="/update_item" method="post">
     <p>
-      Otsikko: <br />
-      <input type="text" name="title" value="{{ item.title }}"/>
+      Nimi: <br />
+      <input type="text" name="title" value="{{ item.name }}"/>
     </p>
     <p>
       Kuvaus: <br />
-      <textarea name="description" rows="8" cols="60">{{ item.description }}</textarea>
+      <textarea name="description" rows="6" cols="60">{{ item.description }}</textarea>
+    </p>
+    <p>
+      Sijainti: <br />
+      <input type="text" name="location" value="{{ item.location }}" />
+    </p>
+    <p>
+      Kategoria (keittiötyyppi): <br />
+      <input type="text" name="category" value="{{ item.category }}" />
     </p>
     <input type="hidden" name="item_id" value="{{ item.id }}" />
-    <input type="submit" value="Päivitä ilmoitusta" />
+    <input type="submit" value="Päivitä" />
   </form>
 </body>
 

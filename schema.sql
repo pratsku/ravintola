@@ -1,13 +1,19 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
-    username TEXT UNIQUE,
-    password_hash TEXT
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL
 );
 
-CREATE TABLE items (
+CREATE TABLE categories (
     id INTEGER PRIMARY KEY,
-    title TEXT,
+    name TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE restaurants (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
     description TEXT,
-    start_price INTEGER,
-    user_id INTEGER REFERENCES users
+    location TEXT,
+    category_id INTEGER REFERENCES categories(id),
+    owner_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );

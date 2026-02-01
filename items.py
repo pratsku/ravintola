@@ -1,43 +1,98 @@
 import db
 
-def add_item(title, description, start_price, user_id):
-    sql = """INSERT INTO items (title, description, start_price, user_id)
-            VALUES (?, ?, ?, ?)"""
-    db.execute(sql, [title, description, start_price, user_id])
+def add_restaurant(name, description, location, category_name, owner_id):
+    cat_id = None
+    if category_name:
+        res = db.query("SELECT id FROM categories WHERE name = ?", [category_name])
+        if res:
+            cat_id = res[0]["id"]
+        else:
+            db.execute("INSERT INTO categories (name) VALUES (?)", [category_name])
+            cat_id = db.last_insert_id()
 
-def get_items():
-    sql = "SELECT id, title FROM items ORDER BY id DESC"
+    sql = "INSERT INTO restaurants (name, description, location, category_id, owner_id) VALUES (?, ?, ?, ?, ?)"
+    db.execute(sql, [name, description, location, cat_id, owner_id])
+
+def get_restaurants():
+    sql = """SELECT r.id, r.name, r.location, c.name AS category,
+            u.username AS owner
+        FROM restaurants r
+        LEFT JOIN categories c ON r.category_id = c.id
+        JOIN users u ON r.owner_id = u.id
+        ORDER BY r.id DESC"""
     return db.query(sql)
 
+def get_restaurant(restaurant_id):
+    sql = """SELECT r.id, r.name, r.description, r.location, r.category_id, c.name AS category,
+                    u.id AS owner_id, u.username
+            FROM restaurants r
+            LEFT JOIN categories c ON r.category_id = c.id
+            JOIN users u ON r.owner_id = u.id
+            WHERE r.id = ?"""
+    res = db.query(sql, [restaurant_id])
+    if not res:
+        return None
+    r = res[0]
+
+    return {
+        "id": r["id"],
+        "name": r["name"],
+        "description": r["description"],
+        "location": r["location"],
+        "category": r["category"],
+        "owner_id": r["owner_id"],
+        "owner_username": r["username"]
+    }
+
+def update_restaurant(restaurant_id, name, description, location, category_name):
+    cat_id = None
+    if category_name:
+        res = db.query("SELECT id FROM categories WHERE name = ?", [category_name])
+        if res:
+            cat_id = res[0]["id"]
+        else:
+            db.execute("INSERT INTO categories (name) VALUES (?)", [category_name])
+            cat_id = db.last_insert_id()
+
+    sql = "UPDATE restaurants SET name = ?, description = ?, location = ?, category_id = ? WHERE id = ?"
+    db.execute(sql, [name, description, location, cat_id, restaurant_id])
+
+def remove_restaurant(restaurant_id):
+    db.execute("DELETE FROM restaurants WHERE id = ?", [restaurant_id])
+
+def find_restaurants(query=None, location=None, cuisine=None):
+    clauses = []
+    params = []
+    if query:
+        clauses.append("(r.name LIKE ? OR r.description LIKE ?)")
+        like = "%" + query + "%"
+        params.extend([like, like])
+    if location:
+        clauses.append("r.location LIKE ?")
+        params.append("%" + location + "%")
+    if cuisine:
+        clauses.append("c.name LIKE ?")
+        params.append("%" + cuisine + "%")
+
+    where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+    sql = f"SELECT r.id, r.name, r.location, c.name AS category FROM restaurants r LEFT JOIN categories c ON r.category_id = c.id {where} ORDER BY r.id DESC"
+    return db.query(sql, params)
+
+
+def add_item(title, description, start_price, user_id):
+    add_restaurant(title, description, None, None, user_id)
+
+def get_items():
+    return get_restaurants()
+
 def get_item(item_id):
-    sql = """SELECT
-                    items.id,
-                    items.title,
-                    items.description,
-                    items.start_price,
-                    users.id AS user_id,
-                    users.username
-            FROM items
-            JOIN users ON items.user_id = users.id
-            WHERE items.id = ?"""
-    result = db.query(sql, [item_id])
-    return result[0] if result else None
+    return get_restaurant(item_id)
 
 def update_item(item_id, title, description):
-    sql = """UPDATE items SET title = ?,
-                            description = ?
-                        WHERE id = ?"""
-
-    db.execute(sql, [title, description, item_id])
+    update_restaurant(item_id, title, description, None, None)
 
 def remove_item(item_id):
-    sql = "DELETE FROM items WHERE id = ?"
-    db.execute(sql, [item_id])
+    remove_restaurant(item_id)
 
 def find_item(query):
-    sql = """SELECT id, title
-            FROM items
-            WHERE title LIKE ? OR description LIKE ?
-            ORDER BY id DESC"""
-    like = "%" + query + "%"
-    return db.query(sql, [like, like])
+    return find_restaurants(query=query)

@@ -2,12 +2,13 @@
 <html>
 
 <head>
-  <title>{{ item.title }}</title>
+  <title>{{ item.name }}</title>
+  <meta charset="utf-8">
 </head>
 
 <body>
-  <h1>{{ item.title }}</h1>
-{% if session.user_id == item.user_id %}
+  <h1>{{ item.name }}</h1>
+{% if session.user_id == item.owner_id %}
   <p>
     <a href="/edit_item/{{ item.id }}">Muokkaa</a>
     <a href="/remove_item/{{ item.id }}">Poista</a>
@@ -17,10 +18,15 @@
     {{ item.description }}
   </p>
   <p>
-    Lähtöhinta: {{ item.start_price }} €
+    Sijainti: {{ item.location }}
   </p>
   <p>
-    Ilmoittaja: {{ item.username }}
+    Kategoria: {{ item.category }}
+  </p>
+  <p>
+    Omistaja: {{ item.owner_username }}
+  </p>
+  <p>
   </p>
   <p>
     <a href="/">Takaisin</a>

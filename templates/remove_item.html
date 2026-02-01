@@ -2,15 +2,15 @@
 <html>
 
 <head>
-  <title>Ilmoituksen poisto</title>
+  <title>Poista ravintola</title>
 </head>
 
 <body>
-  <h1>Ilmoituksen poisto</h1>
-  <p>Ilmoitus: {{ item.title }}</p>
-  <p>Haluatko varmasti poistaa tämän ilmoituksen</p>
+  <h1>Poista ravintola</h1>
+  <p>Ravintola: {{ item.name }}</p>
+  <p>Haluatko varmasti poistaa tämän ravintolan?</p>
   <form action="/remove_item/{{ item.id }}" method="post">
-    <input type="submit" name="remove" value="Poista ilmoitus">
+    <input type="submit" name="remove" value="Poista">
     <input type="submit" name="back" value="Palaa takaisin">
   </form>
 </body>

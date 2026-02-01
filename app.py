@@ -15,22 +15,26 @@ def require_login():
 
 @app.route("/")
 def index():
-    all_items = items.get_items()
-    return render_template("index.html", items=all_items)
+    all_restaurants = items.get_restaurants()
+    return render_template("index.html", items=all_restaurants)
 
 @app.route("/find_item")
 def find_item():
     query = request.args.get("query")
-    if query:
-        results = items.find_item(query)
+    location = request.args.get("location")
+    cuisine = request.args.get("cuisine")
+    if query or location or cuisine:
+        results = items.find_restaurants(query=query, location=location, cuisine=cuisine)
     else:
         query = ""
+        location = ""
+        cuisine = ""
         results = []
-    return render_template("find_item.html", query=query, results=results)
+    return render_template("find_item.html", query=query, location=location, cuisine=cuisine, results=results)
 
 @app.route("/item/<int:item_id>")
 def show_item(item_id):
-    item = items.get_item(item_id)
+    item = items.get_restaurant(item_id)
     if not item:
         abort(404)
     return render_template("show_item.html", item=item)
@@ -43,23 +47,23 @@ def new_item():
 @app.route("/create_item", methods=["POST"])
 def create_item():
     require_login()
-
-    title = request.form["title"]
-    description = request.form["description"]
-    start_price = request.form["start_price"]
+    name = request.form.get("title")
+    description = request.form.get("description")
+    location = request.form.get("location")
+    category = request.form.get("category")
     user_id = session["user_id"]
 
-    items.add_item(title, description, start_price, user_id)
+    items.add_restaurant(name, description, location, category, user_id)
 
     return redirect("/")
 
 @app.route("/edit_item/<int:item_id>")
 def edit_item(item_id):
     require_login()
-    item = items.get_item(item_id)
+    item = items.get_restaurant(item_id)
     if not item:
         abort(404)
-    if item.user_id != session["user_id"]:
+    if item["owner_id"] != session["user_id"]:
         abort(403)
     return render_template("edit_item.html", item=item)
 
@@ -67,26 +71,28 @@ def edit_item(item_id):
 def update_item():
     require_login()
     item_id = request.form["item_id"]
-    item = items.get_item(item_id)
+    item = items.get_restaurant(item_id)
     if not item:
         abort(404)
-    if item.user_id != session["user_id"]:
+    if item["owner_id"] != session["user_id"]:
         abort(403)
 
-    title = request.form["title"]
-    description = request.form["description"]
+    name = request.form.get("title")
+    description = request.form.get("description")
+    location = request.form.get("location")
+    category = request.form.get("category")
 
-    items.update_item(item_id, title, description)
+    items.update_restaurant(item_id, name, description, location, category)
 
     return redirect(f"/item/{item_id}")
 
 @app.route("/remove_item/<int:item_id>", methods=["GET", "POST"])
 def remove_item(item_id):
     require_login()
-    item = items.get_item(item_id)
+    item = items.get_restaurant(item_id)
     if not item:
         abort(404)
-    if item.user_id != session["user_id"]:
+    if item["owner_id"] != session["user_id"]:
         abort(403)
 
     if request.method == "GET":
@@ -130,9 +136,13 @@ def login():
         password = request.form["password"]
 
         sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])[0]
-        user_id = result["id"]
-        password_hash = result["password_hash"]
+        result = db.query(sql, [username])
+        if not result:
+            return "VIRHE: väärä tunnus tai salasana"
+
+        user = result[0]
+        user_id = user["id"]
+        password_hash = user["password_hash"]
 
         if check_password_hash(password_hash, password):
             session["user_id"] = user_id

@@ -2,25 +2,29 @@
 <html>
 
 <head>
-  <title>Uusi ilmoitus</title>
+  <title>Lisää ravintola</title>
 </head>
 
 <body>
-  <h1>Uusi ilmoitus</h1>
+  <h1>Lisää ravintola</h1>
   <form action="/create_item" method="post">
     <p>
-      Otsikko: <br />
-      <input type="text" name="title" />
+      Nimi: <br />
+      <input type="text" name="title" required />
     </p>
     <p>
       Kuvaus: <br />
-      <textarea name="description" rows="8" cols="60"></textarea>
+      <textarea name="description" rows="6" cols="60"></textarea>
     </p>
     <p>
-      Lähtöhinta: <br />
-      <input type="text" name="start_price" size="5" /> €
+      Sijainti: <br />
+      <input type="text" name="location" />
     </p>
-    <input type="submit" value="Luo ilmoitus" />
+    <p>
+      Kategoria (keittiötyyppi): <br />
+      <input type="text" name="category" />
+    </p>
+    <input type="submit" value="Lisää ravintola" />
   </form>
 </body>
 
