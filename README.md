@@ -17,6 +17,7 @@ Sovelluksen ominaisuudet:
 - Ravintoloiden haku avainsanan, sijainnin ja keittiön/luokan mukaan
 
 --- Sovelluksen asennus ---
+
 Asenna flask-kirjasto:
 
 $ pip install flask
