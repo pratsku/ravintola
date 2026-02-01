@@ -1,11 +1,10 @@
 import sqlite3
-from flask import Flask # type: ignore
+from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash # type: ignore
 import config
 import db
 import items
-
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -34,6 +33,21 @@ def create_item():
     items.add_item(title, description, start_price, user_id)
 
     return redirect("/")
+
+@app.route("/edit_item/<int:item_id>")
+def edit_item(item_id):
+    item = items.get_item(item_id)
+    return render_template("edit_item.html", item=item)
+
+@app.route("/update_item", methods=["POST"])
+def update_item():
+    item_id = request.form["item_id"]
+    title = request.form["title"]
+    description = request.form["description"]
+
+    items.update_item(item_id, title, description)
+
+    return redirect(f"/item/{item_id}")
 
 @app.route("/register")
 def register():
