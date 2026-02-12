@@ -1,13 +1,14 @@
 import sqlite3
 from flask import Flask # type: ignore
 from flask import abort, redirect, render_template, request, session # type: ignore
-from werkzeug.security import check_password_hash, generate_password_hash # type: ignore
 import config
 import db
 import items
+import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+app.config.setdefault("DATABASE", "database.db")
 
 def require_login():
     if "user_id" not in session:
@@ -17,6 +18,14 @@ def require_login():
 def index():
     all_restaurants = items.get_restaurants()
     return render_template("index.html", items=all_restaurants)
+
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    restaurants = users.get_restaurants(user_id) 
+    return render_template("show_user.html", user=user, restaurants=restaurants)
 
 @app.route("/find_item")
 def find_item():
@@ -37,7 +46,8 @@ def show_item(item_id):
     item = items.get_restaurant(item_id)
     if not item:
         abort(404)
-    return render_template("show_item.html", item=item)
+    classes = items.get_classes(item_id)
+    return render_template("show_item.html", item=item, classes=classes)
 
 @app.route("/new_item")
 def new_item():
@@ -48,12 +58,21 @@ def new_item():
 def create_item():
     require_login()
     name = request.form.get("title")
+    if len(name) > 50:
+        abort(403)
     description = request.form.get("description")
+    if len(description) > 1000:
+        abort(403)
     location = request.form.get("location")
     category = request.form.get("category")
     user_id = session["user_id"]
 
-    items.add_restaurant(name, description, location, category, user_id)
+    classes = []
+    section = request.form.get("section")
+    if section:
+        classes.append(("Hintataso", section))
+
+    items.add_restaurant(name, description, location, category, user_id, classes)
 
     return redirect("/")
 
@@ -116,11 +135,9 @@ def create():
     password2 = request.form["password2"]
     if password1 != password2:
         return "VIRHE: salasanat eivät ole samat"
-    password_hash = generate_password_hash(password1)
-
+    
     try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+        users.create_user(username, password1)
     except sqlite3.IntegrityError:
         return "VIRHE: tunnus on jo varattu"
 
@@ -135,16 +152,8 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])
-        if not result:
-            return "VIRHE: väärä tunnus tai salasana"
-
-        user = result[0]
-        user_id = user["id"]
-        password_hash = user["password_hash"]
-
-        if check_password_hash(password_hash, password):
+        user_id = users.check_login(username, password)
+        if user_id:
             session["user_id"] = user_id
             session["username"] = username
             return redirect("/")

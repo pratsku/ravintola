@@ -1,6 +1,8 @@
 import db
 
-def add_restaurant(name, description, location, category_name, owner_id):
+def add_restaurant(name, description, location, category_name, owner_id, classes=None):
+    if classes is None:
+        classes = []
     cat_id = None
     if category_name:
         res = db.query("SELECT id FROM categories WHERE name = ?", [category_name])
@@ -12,6 +14,16 @@ def add_restaurant(name, description, location, category_name, owner_id):
 
     sql = "INSERT INTO restaurants (name, description, location, category_id, owner_id) VALUES (?, ?, ?, ?, ?)"
     db.execute(sql, [name, description, location, cat_id, owner_id])
+
+    restaurant_id = db.last_insert_id()
+
+    sql = "INSERT INTO restaurant_classes (restaurant_id, title, value) VALUES (?, ?, ?)"
+    for title, value in classes:
+        db.execute(sql, [restaurant_id, title, value])
+
+def get_classes(restaurant_id):
+    sql = "SELECT title, value FROM restaurant_classes WHERE restaurant_id = ?"
+    return db.query(sql, [restaurant_id])
 
 def get_restaurants():
     sql = """SELECT r.id, r.name, r.location, c.name AS category,
@@ -79,7 +91,7 @@ def find_restaurants(query=None, location=None, cuisine=None):
     return db.query(sql, params)
 
 
-def add_item(title, description, start_price, user_id):
+def add_item(title, description, user_id):
     add_restaurant(title, description, None, None, user_id)
 
 def get_items():

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Käyttäjä {{ user.username }}</title>
+</head>
+
+<body>
+  <h1>Käyttäjä {{ user.username }}</h1>
+  <p>
+    Käyttäjällä on yhteensä {{ restaurants | length }} ravintolaa lisättynä
+  </p>
+  <h2>Ravintolat</h2>
+  <ul>
+    {% for restaurant in restaurants %}
+    <li> <a href="/item/{{ restaurant.id }}">{{ restaurant.name }} </a></li>
+    {% endfor %}
+  </ul>
+  <p>
+    <a href="/">Takaisin</a>
+  </p>
+</body>
+
+</html>
