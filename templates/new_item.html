@@ -24,16 +24,18 @@
       Kategoria (keittiötyyppi): <br />
       <input type="text" name="category" />
     </p>
+    {% for class in classes %}
     <p>
-      Hintataso: <br />
-      <select name="section">
+      {{ class }}: <br />
+      <select name="classes">
         <option value="">(valitse)</option>
-        <option value="€">€</option>
-        <option value="€€">€€</option>
-        <option value="€€€">€€€</option>
-        <option value="€€€€">€€€€</option>
+      {% for option in classes[class] %}
+        <option value="{{ class }}:{{ option }}">{{ option }}</option>
+      {{ option }}
+      {% endfor %}
       </select>
     </p>
+    {% endfor %}
     <input type="submit" value="Lisää ravintola" />
   </form>
 </body>
