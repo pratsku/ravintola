@@ -18,6 +18,12 @@ CREATE TABLE restaurants (
     owner_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE classes (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    value TEXT
+);
+
 CREATE TABLE restaurant_classes (
     id INTEGER PRIMARY KEY,
     restaurant_id INTEGER REFERENCES restaurants,
