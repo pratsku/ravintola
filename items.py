@@ -12,7 +12,7 @@ def get_all_classes():
 
     return classes
 
-def add_restaurant(name, description, location, category_name, owner_id, classes=None):
+def add_restaurant(name, description, location, category_name, owner_id, classes):
     if classes is None:
         classes = []
     cat_id = None
@@ -68,7 +68,7 @@ def get_restaurant(restaurant_id):
         "owner_username": r["username"]
     }
 
-def update_restaurant(restaurant_id, name, description, location, category_name):
+def update_restaurant(restaurant_id, name, description, location, category_name, classes):
     cat_id = None
     if category_name:
         res = db.query("SELECT id FROM categories WHERE name = ?", [category_name])
@@ -80,6 +80,13 @@ def update_restaurant(restaurant_id, name, description, location, category_name)
 
     sql = "UPDATE restaurants SET name = ?, description = ?, location = ?, category_id = ? WHERE id = ?"
     db.execute(sql, [name, description, location, cat_id, restaurant_id])
+
+    sql = "DELETE FROM restaurant_classes WHERE item_id = ?"
+    db.execute(sql, [restaurant_id])
+
+    sql = "INSERT INTO restaurant_classes (restaurant_id, title, value) VALUES (?, ?, ?)"
+    for title, value in classes:
+        db.execute(sql, [restaurant_id, title, value])
 
 def remove_restaurant(restaurant_id):
     db.execute("DELETE FROM restaurants WHERE id = ?", [restaurant_id])
