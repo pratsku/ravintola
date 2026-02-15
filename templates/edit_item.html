@@ -8,6 +8,7 @@
 <body>
   <h1>Muokkaa ravintolaa</h1>
   <form action="/update_item" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <p>
       Nimi: <br />
       <input type="text" name="title" value="{{ item.name }}"/>

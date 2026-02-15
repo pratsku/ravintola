@@ -36,6 +36,32 @@
     </ul>
   </p>
   {% endif %}
+  <hr />
+  <h2>Kommentit</h2>
+  {% if comments %}
+    <ul>
+      {% for comment in comments %}
+        <li>
+          <b>{{ comment.username }}</b> ({{ comment.created_at[:16].replace('T', ' ') }}):<br />
+          {{ comment.content }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Ei kommentteja.</p>
+  {% endif %}
+
+  {% if session.user_id %}
+  <h3>Lisää kommentti</h3>
+  <form action="/add_comment" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+    <textarea name="content" rows="3" cols="40" required></textarea><br />
+    <input type="hidden" name="restaurant_id" value="{{ item.id }}" />
+    <input type="submit" value="Lähetä" />
+  </form>
+  {% else %}
+    <p>Kirjaudu sisään kommentoidaksesi.</p>
+  {% endif %}
   <p>
     <a href="/">Takaisin</a>
   </p>

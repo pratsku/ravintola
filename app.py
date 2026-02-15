@@ -1,14 +1,23 @@
 import sqlite3
+import secrets
 from flask import Flask # type: ignore
 from flask import abort, redirect, render_template, request, session # type: ignore
 import config
 import db
 import items
 import users
+import comments
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config.setdefault("DATABASE", "database.db")
+
+def check_csrf():
+    if request.method == "POST":
+        token_form = request.form.get("csrf_token")
+        token_session = session.get("csrf_token")
+        if not token_form or not token_session or token_form != token_session:
+            abort(403)
 
 def require_login():
     if "user_id" not in session:
@@ -47,7 +56,23 @@ def show_item(item_id):
     if not item:
         abort(404)
     classes = items.get_classes(item_id)
-    return render_template("show_item.html", item=item, classes=classes)
+    comment_list = comments.get_comments(item_id)
+    return render_template("show_item.html", item=item, classes=classes, comments=comment_list)
+
+
+# Add comment to restaurant
+@app.route("/add_comment", methods=["POST"])
+def add_comment():
+    if "user_id" not in session:
+        abort(403)
+    check_csrf()
+    content = request.form.get("content", "").strip()
+    restaurant_id = request.form.get("restaurant_id")
+    if not content or not restaurant_id:
+        abort(400)
+    user_id = session["user_id"]
+    comments.add_comment(content, user_id, restaurant_id)
+    return redirect(f"/item/{restaurant_id}")
 
 @app.route("/new_item")
 def new_item():
@@ -58,6 +83,7 @@ def new_item():
 @app.route("/create_item", methods=["POST"])
 def create_item():
     require_login()
+    check_csrf()
     name = request.form.get("title")
     if len(name) > 50:
         abort(403)
@@ -66,7 +92,10 @@ def create_item():
         abort(403)
     location = request.form.get("location")
     category = request.form.get("category")
-    user_id = session["user_id"]
+    try:
+        user_id = int(session["user_id"])
+    except Exception:
+        abort(403)
 
     all_classes = items.get_all_classes()
 
@@ -80,7 +109,10 @@ def create_item():
                 abort(403)
             classes.append((class_title, class_value))
 
-    items.add_restaurant(name, description, location, category, user_id, classes)
+    try:
+        items.add_restaurant(name, description, location, category, user_id, classes)
+    except ValueError as e:
+        return f"VIRHE: {e}"
 
     return redirect("/")
 
@@ -90,7 +122,11 @@ def edit_item(item_id):
     item = items.get_restaurant(item_id)
     if not item:
         abort(404)
-    if item["owner_id"] != session["user_id"]:
+    try:
+        current_user = int(session.get("user_id"))
+    except Exception:
+        abort(403)
+    if item["owner_id"] != current_user:
         abort(403)
 
     all_classes = items.get_all_classes()
@@ -105,12 +141,19 @@ def edit_item(item_id):
 @app.route("/update_item", methods=["POST"])
 def update_item():
     require_login()
+    check_csrf()
     item_id = request.form["item_id"]
     item = items.get_restaurant(item_id)
     if not item:
         abort(404)
-    if item["owner_id"] != session["user_id"]:
+    try:
+        current_user = int(session.get("user_id"))
+    except Exception:
         abort(403)
+    if item["owner_id"] != current_user:
+        abort(403)
+
+    all_classes = items.get_all_classes()
 
     classes = []
     for entry in request.form.getlist("classes"):
@@ -134,10 +177,16 @@ def update_item():
 @app.route("/remove_item/<int:item_id>", methods=["GET", "POST"])
 def remove_item(item_id):
     require_login()
+    if request.method == "POST":
+        check_csrf()
     item = items.get_restaurant(item_id)
     if not item:
         abort(404)
-    if item["owner_id"] != session["user_id"]:
+    try:
+        current_user = int(session.get("user_id"))
+    except Exception:
+        abort(403)
+    if item["owner_id"] != current_user:
         abort(403)
 
     if request.method == "GET":
@@ -156,18 +205,23 @@ def register():
 
 @app.route("/create", methods=["POST"])
 def create():
-    username = request.form["username"]
+    check_csrf()
+    username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    if not username or not password1 or not password2:
+        return "VIRHE: kaikki kentät ovat pakollisia"
+    if len(username) < 3 or len(username) > 30:
+        return "VIRHE: käyttäjätunnuksen tulee olla 3-30 merkkiä"
+    if len(password1) < 6 or len(password1) > 100:
+        return "VIRHE: salasanan tulee olla 6-100 merkkiä"
     if password1 != password2:
         return "VIRHE: salasanat eivät ole samat"
-    
     try:
         users.create_user(username, password1)
     except sqlite3.IntegrityError:
         return "VIRHE: tunnus on jo varattu"
-
-    return "Tunnus luotu"
+    return render_template("register_success.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -182,6 +236,7 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
             return "VIRHE: väärä tunnus tai salasana"

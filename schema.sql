@@ -30,3 +30,11 @@ CREATE TABLE restaurant_classes (
     title TEXT,
     value TEXT
 );
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    user_id INTEGER REFERENCES users(id),
+    restaurant_id INTEGER REFERENCES restaurants(id)
+);

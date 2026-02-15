@@ -5,9 +5,11 @@ def get_all_classes():
     result = db.query(sql)
 
     classes = {}
-    for title, value in result:
-        classes[title] = []
-    for title, value in result:
+    for row in result:
+        title = row["title"]
+        value = row["value"]
+        if title not in classes:
+            classes[title] = []
         classes[title].append(value)
 
     return classes
@@ -81,7 +83,7 @@ def update_restaurant(restaurant_id, name, description, location, category_name,
     sql = "UPDATE restaurants SET name = ?, description = ?, location = ?, category_id = ? WHERE id = ?"
     db.execute(sql, [name, description, location, cat_id, restaurant_id])
 
-    sql = "DELETE FROM restaurant_classes WHERE item_id = ?"
+    sql = "DELETE FROM restaurant_classes WHERE restaurant_id = ?"
     db.execute(sql, [restaurant_id])
 
     sql = "INSERT INTO restaurant_classes (restaurant_id, title, value) VALUES (?, ?, ?)"
@@ -89,6 +91,7 @@ def update_restaurant(restaurant_id, name, description, location, category_name,
         db.execute(sql, [restaurant_id, title, value])
 
 def remove_restaurant(restaurant_id):
+    db.execute("DELETE FROM restaurant_classes WHERE restaurant_id = ?", [restaurant_id])
     db.execute("DELETE FROM restaurants WHERE id = ?", [restaurant_id])
 
 def find_restaurants(query=None, location=None, cuisine=None):
@@ -111,7 +114,7 @@ def find_restaurants(query=None, location=None, cuisine=None):
 
 
 def add_item(title, description, user_id):
-    add_restaurant(title, description, None, None, user_id)
+    add_restaurant(title, description, None, None, user_id, [])
 
 def get_items():
     return get_restaurants()
@@ -120,7 +123,7 @@ def get_item(item_id):
     return get_restaurant(item_id)
 
 def update_item(item_id, title, description):
-    update_restaurant(item_id, title, description, None, None)
+    update_restaurant(item_id, title, description, None, None, [])
 
 def remove_item(item_id):
     remove_restaurant(item_id)
