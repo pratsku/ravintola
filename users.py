@@ -1,27 +1,22 @@
 
-"""User management functions for the restaurant app."""
 from werkzeug.security import check_password_hash, generate_password_hash # type: ignore
 import db
 
 def get_user(user_id):
-    """Return user by id, or None if not found."""
     sql = "SELECT id, username FROM users WHERE id = ?"
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
 def get_restaurants(user_id):
-    """Return all restaurants owned by a user."""
     sql = "SELECT id, name FROM restaurants WHERE owner_id = ? ORDER BY id DESC"
     return db.query(sql, [user_id])
 
 def create_user(username, password):
-    """Create a new user with a hashed password."""
     password_hash = generate_password_hash(password)
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
     db.execute(sql, [username, password_hash])
 
 def check_login(username, password):
-    """Check user credentials and return user id if valid, else None."""
     sql = "SELECT id, password_hash FROM users WHERE username = ?"
     result = db.query(sql, [username])
     if not result:
