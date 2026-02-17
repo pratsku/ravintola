@@ -1,9 +1,10 @@
+
+"""Flask app for restaurant management."""
 import sqlite3
 import secrets
 from flask import Flask # type: ignore
 from flask import abort, redirect, render_template, request, session # type: ignore
 import config
-import db
 import items
 import users
 import comments
@@ -13,6 +14,7 @@ app.secret_key = config.secret_key
 app.config.setdefault("DATABASE", "database.db")
 
 def check_csrf():
+    """Check CSRF token for POST requests."""
     if request.method == "POST":
         token_form = request.form.get("csrf_token")
         token_session = session.get("csrf_token")
@@ -20,38 +22,51 @@ def check_csrf():
             abort(403)
 
 def require_login():
+    """Abort if user is not logged in."""
     if "user_id" not in session:
         abort(403)
 
 @app.route("/")
 def index():
+    """Render the index page with all restaurants."""
     all_restaurants = items.get_restaurants()
     return render_template("index.html", items=all_restaurants)
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
+    """Show user profile and their restaurants."""
     user = users.get_user(user_id)
     if not user:
         abort(404)
-    restaurants = users.get_restaurants(user_id) 
+    restaurants = users.get_restaurants(user_id)
     return render_template("show_user.html", user=user, restaurants=restaurants)
 
 @app.route("/find_item")
 def find_item():
+    """Find restaurants by query, location, or cuisine."""
     query = request.args.get("query")
     location = request.args.get("location")
     cuisine = request.args.get("cuisine")
     if query or location or cuisine:
-        results = items.find_restaurants(query=query, location=location, cuisine=cuisine)
+        results = items.find_restaurants(
+            query=query, location=location, cuisine=cuisine
+        )
     else:
         query = ""
         location = ""
         cuisine = ""
         results = []
-    return render_template("find_item.html", query=query, location=location, cuisine=cuisine, results=results)
+    return render_template(
+        "find_item.html",
+        query=query,
+        location=location,
+        cuisine=cuisine,
+        results=results,
+    )
 
 @app.route("/item/<int:item_id>")
 def show_item(item_id):
+    """Show details for a single restaurant."""
     item = items.get_restaurant(item_id)
     if not item:
         abort(404)
@@ -63,6 +78,7 @@ def show_item(item_id):
 # Add comment to restaurant
 @app.route("/add_comment", methods=["POST"])
 def add_comment():
+    """Add a comment to a restaurant."""
     if "user_id" not in session:
         abort(403)
     check_csrf()
@@ -76,12 +92,14 @@ def add_comment():
 
 @app.route("/new_item")
 def new_item():
+    """Render form to add a new restaurant."""
     require_login()
     classes = items.get_all_classes()
     return render_template("new_item.html", classes=classes)
 
 @app.route("/create_item", methods=["POST"])
 def create_item():
+    """Create a new restaurant item."""
     require_login()
     check_csrf()
     name = request.form.get("title")
@@ -94,7 +112,7 @@ def create_item():
     category = request.form.get("category")
     try:
         user_id = int(session["user_id"])
-    except Exception:
+    except (KeyError, ValueError):
         abort(403)
 
     all_classes = items.get_all_classes()
@@ -105,12 +123,15 @@ def create_item():
             class_title, class_value = entry.split(":")
             if class_title not in all_classes:
                 abort(403)
+            # Split long line to fix pylint C0301
             if class_value not in all_classes[class_title]:
                 abort(403)
             classes.append((class_title, class_value))
 
     try:
-        items.add_restaurant(name, description, location, category, user_id, classes)
+        items.add_restaurant(
+            name, description, location, category, user_id, classes
+        )
     except ValueError as e:
         return f"VIRHE: {e}"
 
@@ -118,13 +139,14 @@ def create_item():
 
 @app.route("/edit_item/<int:item_id>")
 def edit_item(item_id):
+    """Render form to edit a restaurant item."""
     require_login()
     item = items.get_restaurant(item_id)
     if not item:
         abort(404)
     try:
         current_user = int(session.get("user_id"))
-    except Exception:
+    except (TypeError, ValueError):
         abort(403)
     if item["owner_id"] != current_user:
         abort(403)
@@ -135,11 +157,12 @@ def edit_item(item_id):
         classes[my_class] = ""
     for entry in items.get_classes(item_id):
         classes[entry["title"]] = entry["value"]
-    
+
     return render_template("edit_item.html", item=item, classes=classes, all_classes=all_classes)
 
 @app.route("/update_item", methods=["POST"])
 def update_item():
+    """Update a restaurant item."""
     require_login()
     check_csrf()
     item_id = request.form["item_id"]
@@ -148,7 +171,7 @@ def update_item():
         abort(404)
     try:
         current_user = int(session.get("user_id"))
-    except Exception:
+    except (TypeError, ValueError):
         abort(403)
     if item["owner_id"] != current_user:
         abort(403)
@@ -170,12 +193,15 @@ def update_item():
     location = request.form.get("location")
     category = request.form.get("category")
 
-    items.update_restaurant(item_id, name, description, location, category, classes)
+    items.update_restaurant(
+        item_id, name, description, location, category, classes
+    )
 
     return redirect(f"/item/{item_id}")
 
 @app.route("/remove_item/<int:item_id>", methods=["GET", "POST"])
 def remove_item(item_id):
+    """Remove a restaurant item."""
     require_login()
     if request.method == "POST":
         check_csrf()
@@ -184,27 +210,29 @@ def remove_item(item_id):
         abort(404)
     try:
         current_user = int(session.get("user_id"))
-    except Exception:
+    except (TypeError, ValueError):
         abort(403)
     if item["owner_id"] != current_user:
         abort(403)
 
     if request.method == "GET":
         return render_template("remove_item.html", item=item)
-    
+
     if request.method == "POST":
         if "remove" in request.form:
             items.remove_item(item_id)
             return redirect("/")
-        else:
-            return redirect(f"/item/{item_id}")
+        return redirect(f"/item/{item_id}")
+    return None
 
 @app.route("/register")
 def register():
+    """Render the registration form."""
     return render_template("register.html")
 
 @app.route("/create", methods=["POST"])
 def create():
+    """Create a new user account."""
     check_csrf()
     username = request.form["username"].strip()
     password1 = request.form["password1"]
@@ -225,6 +253,7 @@ def create():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """Log in a user."""
     if request.method == "GET":
         return render_template("login.html")
 
@@ -238,11 +267,12 @@ def login():
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
-        else:
-            return "VIRHE: väärä tunnus tai salasana"
+        return "VIRHE: väärä tunnus tai salasana"
+    return None
 
 @app.route("/logout")
 def logout():
+    """Log out the current user."""
     if "user_id" in session:
         del session["user_id"]
         del session["username"]

@@ -6,7 +6,7 @@
 - Käyttäjä pystyy antamaan ravintoloille arvosteluja ja/tai pisteytyksiä sekä näkee muiden käyttäjien antamia arvosteluja.
 - Käyttäjä pystyy valitsemaan ravintolalle yhden tai useamman luokan (esimerkiksi keittiötyyppi, hintataso tai erityisruokavaliot).
 
-# Välipalautus 2 - 1.2.2026
+# Välipalautus 3 - 15.2.2026
 Sovelluksen ominaisuudet:
 
 - Käyttäjän rekisteröityminen ja kirjautuminen
