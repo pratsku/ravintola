@@ -108,9 +108,11 @@ def find_restaurants(query=None, location=None, cuisine=None):
 
     where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
     sql = (
-        "SELECT r.id, r.name, r.location, c.name AS category "
+        "SELECT r.id, r.name, r.location, c.name AS category, u.id AS user_id, u.username, "
+        "(SELECT COUNT(*) FROM comments WHERE restaurant_id = r.id) AS comment_count "
         "FROM restaurants r "
         "LEFT JOIN categories c ON r.category_id = c.id "
+        "JOIN users u ON r.owner_id = u.id "
         f"{where} "
         "ORDER BY r.id DESC"
     )
