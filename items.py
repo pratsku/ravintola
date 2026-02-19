@@ -121,8 +121,7 @@ def add_item(title, description, user_id):
     add_restaurant(title, description, None, None, user_id, [])
 
 def get_items():
-    #return get_restaurants()
-    pass
+    return find_restaurants()
 
 def get_item(item_id):
     return get_restaurant(item_id)

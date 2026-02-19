@@ -25,7 +25,7 @@ def require_login():
 
 @app.route("/")
 def index():
-    all_restaurants = items.get_restaurants()
+    all_restaurants = items.get_items()
     return render_template("index.html", items=all_restaurants)
 
 @app.route("/user/<int:user_id>")
