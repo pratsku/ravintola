@@ -1,39 +1,30 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Etsi ravintola</title>
-</head>
+{% block title %}Ravintolahaku{% endblock %}
 
-<body>
-  <h1>Etsi ravintola</h1>
+{% block content %}
+<h2>Etsi ravintola</h2>
 
-  <form action="/find_item" method="get">
-    <p>
-        Hakusana: <input type="text" name="query" value="{{ query}}">
-    </p>
-    <p>
-        Sijainti: <input type="text" name="location" value="{{ location }}">
-    </p>
-    <p>
-        Keittiötyyppi: <input type="text" name="cuisine" value="{{ cuisine }}">
-    </p>
-    <input type="submit" value="Hae">
-  </form>
-
+<form action="/find_item" method="get">
   <p>
-    <a href="/">Takaisin</a>
+      Hakusana: <input type="text" name="query" value="{{ query}}">
   </p>
+  <p>
+      Sijainti: <input type="text" name="location" value="{{ location }}">
+  </p>
+  <p>
+      Keittiötyyppi: <input type="text" name="cuisine" value="{{ cuisine }}">
+  </p>
+  <input type="submit" value="Hae">
+</form>
 
-  {% if results %}
-  <h2>Tulokset</h2>
+{% if results %}
+<h2>Tulokset</h2>
 
-  <ul>
-    {% for item in results %}
-    <li><a href="/item/{{ item.id }}">{{ item.name }}</a> {% if item.location %}- {{ item.location }}{% endif %}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-</body>
-
-</html>
+<ul>
+  {% for item in results %}
+  <li><a href="/item/{{ item.id }}">{{ item.name }}</a> {% if item.location %}- {{ item.location }}{% endif %}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
