@@ -15,7 +15,7 @@ def get_all_classes():
 
     return classes
 
-def add_restaurant(name, description, location, category_name, owner_id, classes):
+def add_restaurant(name, description, location, category_name, owner_id, classes):  # pylint: disable=too-many-arguments,too-many-positional-arguments
     if classes is None:
         classes = []
     cat_id = None
@@ -65,7 +65,7 @@ def get_restaurant(restaurant_id):
         "owner_username": r["username"]
     }
 
-def update_restaurant(restaurant_id, name, description, location, category_name, classes):
+def update_restaurant(restaurant_id, name, description, location, category_name, classes):  # pylint: disable=too-many-arguments,too-many-positional-arguments
     cat_id = None
     if category_name:
         res = db.query("SELECT id FROM categories WHERE name = ?", [category_name])

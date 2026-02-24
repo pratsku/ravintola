@@ -13,7 +13,7 @@ import items
 import users
 
 app = Flask(__name__)
-app.secret_key = config.secret_key
+app.secret_key = config.SECRET_KEY
 app.config.setdefault("DATABASE", "database.db")
 
 def check_csrf():
