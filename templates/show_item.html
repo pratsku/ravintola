@@ -13,25 +13,18 @@
 <p>
   {{ item.description }}
 </p>
-<p>
-  Sijainti: {{ item.location }}
-</p>
-<p>
-  Kategoria: {{ item.category }}
-</p>
-<p>
-  Omistaja: <a href="/user/{{ item.owner_id }}">{{ item.owner_username }}</a>
-</p>
+<ul>
+  <li>Sijainti: {{ item.location }}</li>
+  <li>Kategoria: {{ item.category }}</li>
 {% if classes %}
-<p>
-  Luokat:
-  <ul>
-    {% for class in classes %}
-    <li>{{ class.title}}: {{ class.value}}</li>
-    {% endfor %}
-  </ul>
-</p>
+  {% for class in classes %}
+  <li>{{ class.title}}: {{ class.value}}</li>
+  {% endfor %}
 {% endif %}
+</ul>
+<p>
+  Lisääjä: <a href="/user/{{ item.owner_id }}">{{ item.owner_username }}</a>
+</p>
 <hr />
 <h3>Kommentit</h3>
 {% if comments %}

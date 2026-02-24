@@ -3,7 +3,8 @@
 {% block title %}Ravintolan muokkaus{% endblock %}
 
 {% block content %}
-<h2>Muokkaa ravintolaa</h2>
+<h2>{{ item.name }}</h2>
+<h3>Muokkaa ravintolaa</h3>
 <form action="/update_item" method="post">
   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   <p>
@@ -40,4 +41,7 @@
   {% endfor %}
   <input type="submit" value="Päivitä" />
 </form>
+<p>
+  <a href="/item/{{ item.id }}">Takaisin</a>
+</p>
 {% endblock %}
