@@ -1,14 +1,16 @@
 
 import sqlite3
 import secrets
+
 from flask import Flask # type: ignore
 from flask import abort, redirect, render_template, request, session, flash # type: ignore
-import db
-import config
 import markupsafe
+
+import comments
+import config
+import db
 import items
 import users
-import comments
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
