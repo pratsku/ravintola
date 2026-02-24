@@ -26,7 +26,7 @@ CREATE TABLE classes (
 
 CREATE TABLE restaurant_classes (
     id INTEGER PRIMARY KEY,
-    restaurant_id INTEGER REFERENCES restaurants,
+    restaurant_id INTEGER NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
     title TEXT,
     value TEXT
 );
