@@ -1,4 +1,4 @@
 __pycache__
 .venv
 database.db
-venv/
+venv/.DS_Store
