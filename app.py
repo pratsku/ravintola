@@ -5,6 +5,7 @@ import secrets
 from flask import Flask # type: ignore
 from flask import abort, redirect, render_template, request, session, flash # type: ignore
 import markupsafe
+import math
 
 import comments
 import config
@@ -13,7 +14,7 @@ import items
 import users
 
 app = Flask(__name__)
-app.secret_key = config.SECRET_KEY
+app.secret_key = config.secret_key
 app.config.setdefault("DATABASE", "database.db")
 
 def check_csrf():
@@ -34,9 +35,20 @@ def show_lines(content):
     return markupsafe.Markup(content)
 
 @app.route("/")
-def index():
-    all_restaurants = items.get_items()
-    return render_template("index.html", items=all_restaurants)
+@app.route("/<int:page>")
+def index(page=1):
+    page_size = 10
+    # total restaurants for pagination
+    total = items.count_restaurants()
+    page_count = math.ceil(total / page_size) if total > 0 else 1
+
+    if page < 1:
+        return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+
+    all_restaurants = items.get_items(page=page, page_size=page_size)
+    return render_template("index.html", items=all_restaurants, page=page, page_count=page_count)
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):

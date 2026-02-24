@@ -92,7 +92,7 @@ def remove_restaurant(restaurant_id):
     db.execute("DELETE FROM restaurant_classes WHERE restaurant_id = ?", [restaurant_id])
     db.execute("DELETE FROM restaurants WHERE id = ?", [restaurant_id])
 
-def find_restaurants(query=None, location=None, cuisine=None):
+def find_restaurants(query=None, location=None, cuisine=None, page=None, page_size=None):
     clauses = []
     params = []
     if query:
@@ -116,14 +116,50 @@ def find_restaurants(query=None, location=None, cuisine=None):
         f"{where} "
         "ORDER BY r.id DESC"
     )
+
+    # Support pagination when page and page_size are provided.
+    if page is not None and page_size is not None:
+        limit = page_size
+        offset = page_size * (page - 1)
+        sql = sql + " LIMIT ? OFFSET ?"
+        params = params + [limit, offset]
+
     return db.query(sql, params)
+
+
+def count_restaurants(query=None, location=None, cuisine=None):
+    """Return number of restaurants matching optional filters."""
+    clauses = []
+    params = []
+    if query:
+        clauses.append("(r.name LIKE ? OR r.description LIKE ?)")
+        like = "%" + query + "%"
+        params.extend([like, like])
+    if location:
+        clauses.append("r.location LIKE ?")
+        params.append("%" + location + "%")
+    if cuisine:
+        clauses.append("c.name LIKE ?")
+        params.append("%" + cuisine + "%")
+
+    where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+
+    sql = (
+        "SELECT COUNT(DISTINCT r.id) AS cnt "
+        "FROM restaurants r "
+        "LEFT JOIN categories c ON r.category_id = c.id "
+        "JOIN users u ON r.owner_id = u.id "
+        f"{where} "
+    )
+    res = db.query(sql, params)
+    return res[0]["cnt"] if res else 0
 
 
 def add_item(title, description, user_id):
     add_restaurant(title, description, None, None, user_id, [])
 
-def get_items():
-    return find_restaurants()
+def get_items(page=None, page_size=None):
+    return find_restaurants(page=page, page_size=page_size)
 
 def get_item(item_id):
     return get_restaurant(item_id)

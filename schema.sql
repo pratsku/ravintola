@@ -38,3 +38,6 @@ CREATE TABLE comments (
     user_id INTEGER REFERENCES users(id),
     restaurant_id INTEGER REFERENCES restaurants(id)
 );
+
+-- Index to speed up lookups of comments by restaurant (used for counts and listing)
+CREATE INDEX IF NOT EXISTS idx_comments_restaurant_id ON comments (restaurant_id);
