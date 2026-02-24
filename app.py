@@ -38,7 +38,6 @@ def show_lines(content):
 @app.route("/<int:page>")
 def index(page=1):
     page_size = 10
-    # total restaurants for pagination
     total = items.count_restaurants()
     page_count = math.ceil(total / page_size) if total > 0 else 1
 

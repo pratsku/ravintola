@@ -1,9 +1,1 @@
-import os
-
-# Read the Flask secret key from an environment variable in production.
-# The hard-coded fallback is only for development/testing; do NOT use
-# this value in production. Set `RAVINTOLA_SECRET_KEY` in the environment.
-secret_key = os.environ.get(
-	"RAVINTOLA_SECRET_KEY",
-	"dev-secret-key-please-change-this-in-production",
-)
+secret_key = "18fd24bf6a2ad4dac04a33963db1c42f"

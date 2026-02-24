@@ -117,7 +117,6 @@ def find_restaurants(query=None, location=None, cuisine=None, page=None, page_si
         "ORDER BY r.id DESC"
     )
 
-    # Support pagination when page and page_size are provided.
     if page is not None and page_size is not None:
         limit = page_size
         offset = page_size * (page - 1)
@@ -128,7 +127,6 @@ def find_restaurants(query=None, location=None, cuisine=None, page=None, page_si
 
 
 def count_restaurants(query=None, location=None, cuisine=None):
-    """Return number of restaurants matching optional filters."""
     clauses = []
     params = []
     if query:

@@ -1,30 +1,23 @@
-/* Page layout */
-/* keep the page background full-width on the html element,
-   and constrain the readable content in the centered body */
 html {
-  background-color: #f0f6fb; /* light background fills the window */
+  background-color: #f0f6fb;
 }
 body {
-  max-width: 900px;      /* constrain content width */
-  margin: 20px auto;     /* center with gaps on both sides */
-  padding: 0 15px;       /* small inner padding */
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 15px;
   font-family: Arial, Helvetica, sans-serif;
   color: #222;
   line-height: 1.4;
-  background: transparent; /* let html show through */
+  background: transparent;
 }
 
-/* --- Design improvements for a cleaner look --- */
-/* Use a nicer system font stack */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: #14202b;
 }
 
-/* Gentle page background gradient */
 html { background: linear-gradient(180deg, #f7fbfc 0%, #eef6fb 100%); }
 
-/* Make the main heading stand out */
 h1 {
   font-size: 28px;
   margin: 18px 0 8px 0;
@@ -32,19 +25,15 @@ h1 {
   letter-spacing: -0.3px;
 }
 
-/* Links row (original template uses a <p> with links) */
 p a { color: #0b5f63; text-decoration: none; margin-right: 8px; }
 p a:hover { text-decoration: underline; }
 
-/* Global link color to avoid default browser blue in lists and other places */
 a, a:visited { color: #0b5f63; }
 
-/* Style links inside lists (e.g. user profile restaurants) */
 ul { padding-left: 1.1rem; }
 ul li a { color: #0b5f63; text-decoration: none; }
 ul li a:hover { text-decoration: underline; }
 
-/* Light card look for items with a small lift on hover */
 .item {
   background-color: #fff;
   border: 1px solid #e3eaee;
@@ -61,11 +50,9 @@ ul li a:hover { text-decoration: underline; }
 .item h3 { margin: 0 0 6px 0; font-size: 18px; }
 .item .meta { color: #59656a; font-size: 14px; }
 
-/* Slightly stronger link color, visible on white */
 .item a { color: #0b5f63; text-decoration: none; font-weight: 600; }
 .item a:hover { text-decoration: underline; }
 
-/* Flash message refinement (original template uses class 'info') */
 .info, .flash {
   background-color: #f0f9f8;
   border: 1px solid #d0edea;
@@ -75,16 +62,13 @@ ul li a:hover { text-decoration: underline; }
   margin: 12px 0;
 }
 
-/* Buttons: simple, consistent styles */
 .btn { display:inline-block; padding: 8px 12px; border-radius: 6px; cursor: pointer; border: none; }
 .btn-primary { background-color: #0b7f7f; color: white; }
 .btn-secondary { background-color: transparent; border: 1px solid #d6dde0; color: #17343a; }
 
-/* Pagination and misc */
 .pagination a { margin-right: 8px; color: #0b5f63; text-decoration: none; }
 .pagination a:hover { text-decoration: underline; }
 
-/* Forms: small improvements to spacing and focus */
 input[type="text"], input[type="password"], textarea, select {
   width: 100%;
   padding: 10px;
@@ -94,22 +78,18 @@ input[type="text"], input[type="password"], textarea, select {
 }
 input:focus, textarea:focus, select:focus { outline: none; box-shadow: 0 0 0 3px rgba(11,127,127,0.06); border-color: #0b7f7f; }
 
-/* Footer */
 footer { color: #55656a; font-size: 13px; text-align: center; margin: 30px 0; }
 
-/* Responsive tweak: two columns on wider screens */
 @media (min-width: 760px) {
   .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 
-/* Limit content width and center */
 .container {
   max-width: 900px;
   margin: 20px auto;
   padding: 0 15px;
 }
 
-/* Header and navigation */
 header {
   background-color: #fff;
   border-bottom: 1px solid #ddd;
@@ -134,7 +114,6 @@ header {
 }
 .site-nav a:hover { text-decoration: underline; }
 
-/* Flash messages */
 .flash {
   background-color: #e6f7f6;
   border: 1px solid #cfe9e8;
@@ -143,9 +122,8 @@ header {
   margin: 12px 0;
 }
 
-/* Items list as simple cards */
 .items-grid {
-  display: block; /* simple single column */
+  display: block;
   margin-top: 16px;
 }
 .item {
@@ -160,14 +138,9 @@ header {
 .item a { color: #0b7285; text-decoration: none; }
 .item a:hover { text-decoration: underline; }
 
-/* Simple pagination */
 .pagination { margin-top: 10px; }
 .pagination a { margin-right: 8px; color: #0b7285; text-decoration: none; }
 
-/* Simple forms */
-/* Keep label inline so a trailing colon stays on the same line as the label text
-  Templates use: <label>Text</label>: <br /> so making labels inline keeps the colon
-  on the same line while the following <br /> still pushes the input to the next line. */
 label { display: inline; margin-bottom: 6px; font-weight: 600; }
 input[type="text"], input[type="password"], textarea, select {
   width: 100%;
@@ -182,14 +155,11 @@ textarea { min-height: 100px; }
 .btn-primary { background-color: #0b7285; color: white; }
 .btn-secondary { background-color: transparent; border: 1px solid #ccc; }
 
-/* Footer */
 footer { color: #666; font-size: 14px; text-align: center; margin: 30px 0; }
 
-/* Small helper classes */
 .muted { color: #666; }
 .help { color: #666; font-size: 13px; margin-top: 8px; }
 
-/* A tiny responsive tweak: two columns on wider screens */
 @media (min-width: 700px) {
   .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
