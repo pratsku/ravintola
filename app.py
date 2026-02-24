@@ -3,6 +3,7 @@ import sqlite3
 import secrets
 from flask import Flask # type: ignore
 from flask import abort, redirect, render_template, request, session # type: ignore
+import db
 import config
 import items
 import users
@@ -123,7 +124,8 @@ def create_item():
     except ValueError as e:
         return f"VIRHE: {e}"
 
-    return redirect("/")
+    item_id = db.last_insert_id()
+    return redirect("/item/" + str(item_id))
 
 @app.route("/edit_item/<int:item_id>")
 def edit_item(item_id):
