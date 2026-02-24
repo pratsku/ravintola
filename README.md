@@ -1,29 +1,19 @@
 # Ravintolahaku
+## Sovelluksen ominaisuudet
 - Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
 - Käyttäjä pystyy lisäämään ravintoloita, muokkaamaan ja poistamaan lisäämiään ravintoloita.
 - Käyttäjä näkee sovellukseen lisätyt ravintolat (itse lisäämänsä että muiden käyttäjien lisäämät ravintolat).
-- Käyttäjä pystyy etsimään ravintoloita hakusanalla, sijainnin, keittiötyypin tai muun kriteerin perusteella.
+- Käyttäjä pystyy etsimään ravintoloita hakusanalla, avainsanan, sijainnin, tai keittiötyypin perusteella.
 - Käyttäjä pystyy tarkastelemaan ravintolan tietoja, kuten nimeä, kuvausta ja sijaintia.
-- Käyttäjä pystyy antamaan ravintoloille arvosteluja ja/tai pisteytyksiä sekä näkee muiden käyttäjien antamia arvosteluja.
-- Käyttäjä pystyy valitsemaan ravintolalle yhden tai useamman luokan (esimerkiksi keittiötyyppi, hintataso tai erityisruokavaliot).
-
-# Välipalautus 3 - 15.2.2026
-## Sovelluksen tähän menneessä ominaisuudet:
-
-- Käyttäjän rekisteröityminen ja kirjautuminen
-- Ravintoloiden lisääminen nimellä, kuvauksella, sijainnilla, hintatasolla ja yhdellä luokalla (keittiötyyppi)
-- Ravintoloiden muokkaaminen ja poistaminen vain, jos olet lisännyt käyttäjä
-- Voi tarkistaa muiden käyttäjien lisäämiä ravintoloita ja tietoja klikkaamalla heidän käyttäjän nimeä
-- Voi kommentoida muiden käyttäjien lisäämiin ravintoloihin
-- Ravintoloiden haku avainsanan, sijainnin ja keittiötyypin mukaan
+- Käyttäjä pystyy valitsemaan ravintolalle yhden luokan (hintataso).
+- Käyttäjä pystyy kommentoimaan muiden käyttäjien lisäämiin ravintoloihin.
 
 ## Sovelluksen asennus
-
 Asenna flask-kirjasto:
 ```
 $ pip install flask
 ```
-Voit luoda tarvittaessa virtuaaliympäristö:
+Luo tarvittaessa virtuaaliympäristö:
 ```
 $ python3 -m venv venv
 
@@ -41,8 +31,7 @@ $ flask run
 
 ## Sovelluksen käyttö
 
-- Rekisteröidy käyttäjäksi sivulla ”Luo tunnus”
-- Kirjaudu sisään ja lisää ravintola sivulla ”Lisää ravintola”
-- Voi etsiä lisäämiäsi ja muiden lisäättyjä ravintoloita hakutoimintoa käyttäen "Etsi ravintola" ja suodata hakusanojen, sijainnin tai keittiötyypin mukaan
-- Tarkista muiden käyttäjien lisäämiä ravintoloita
-- Kommentoi kohteisiin
+- Luo ensin tunnus ja kirjaudu sisään. 
+- Voit lisätä uuden ravintolan Lisää ravintola -lomakkeella. 
+- Etsi olemassa olevia ravintoloita 'Etsi ravintola' -toiminnolla ja suodata sijainnin tai keittiön mukaan. 
+- Klikkaa kohdetta nähdäksesi tiedot ja kommentoitavissa olevat kentät.
