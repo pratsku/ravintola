@@ -11,7 +11,7 @@
 </p>
 {% endif %}
 <p>
-  {{ item.description }}
+  {{ item.description | show_lines }}
 </p>
 <ul>
   <li>Sijainti: {{ item.location }}</li>

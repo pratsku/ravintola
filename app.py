@@ -2,9 +2,10 @@
 import sqlite3
 import secrets
 from flask import Flask # type: ignore
-from flask import abort, redirect, render_template, request, session # type: ignore
+from flask import abort, redirect, render_template, request, session, flash # type: ignore
 import db
 import config
+import markupsafe
 import items
 import users
 import comments
@@ -23,6 +24,12 @@ def check_csrf():
 def require_login():
     if "user_id" not in session:
         abort(403)
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 @app.route("/")
 def index():
@@ -222,19 +229,33 @@ def create():
     username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    errors = False
     if not username or not password1 or not password2:
-        return "VIRHE: kaikki kentät ovat pakollisia"
+        flash("VIRHE: kaikki kentät ovat pakollisia")
+        errors = True
     if len(username) < 3 or len(username) > 30:
-        return "VIRHE: käyttäjätunnuksen tulee olla 3-30 merkkiä"
+        flash("VIRHE: käyttäjätunnuksen tulee olla 3-30 merkkiä")
+        errors = True
     if len(password1) < 6 or len(password1) > 100:
-        return "VIRHE: salasanan tulee olla 6-100 merkkiä"
+        flash("VIRHE: salasanan tulee olla 6-100 merkkiä")
+        errors = True
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
+        flash("VIRHE: salasanat eivät ole samat")
+        errors = True
+
+    if errors:
+        return redirect("/register")
+
+    password1 = str(password1)
+
     try:
         users.create_user(username, password1)
     except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
-    return render_template("register_success.html")
+        flash("VIRHE: tunnus on jo varattu")
+        return redirect("/register")
+
+    flash("Tunnus luotu onnistuneesti. Voit nyt kirjautua sisään.")
+    return redirect("/login")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -251,7 +272,8 @@ def login():
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
-        return "VIRHE: väärä tunnus tai salasana"
+        flash("VIRHE: väärä tunnus tai salasana")
+        return redirect("/login")
     return None
 
 @app.route("/logout")
