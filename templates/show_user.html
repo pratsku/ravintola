@@ -7,7 +7,7 @@
 <p>
   Käyttäjällä on yhteensä {{ restaurants | length }} ravintolaa lisättynä
 </p>
-<h3>Ravintolat</h3>
+<h3>Lisätyt ravintolat</h3>
 <ul>
   {% for restaurant in restaurants %}
   <li> <a href="/item/{{ restaurant.id }}">{{ restaurant.name }} </a></li>
