@@ -40,3 +40,7 @@ CREATE TABLE comments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_comments_restaurant_id ON comments (restaurant_id);
+
+-- Indeksit, jotka auttavat suurten tietomäärien suorituskykyä (haku ja luettelointi)
+CREATE INDEX IF NOT EXISTS idx_restaurants_owner_id ON restaurants (owner_id);
+CREATE INDEX IF NOT EXISTS idx_restaurants_location ON restaurants (location);
