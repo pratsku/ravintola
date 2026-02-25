@@ -11,7 +11,7 @@ CREATE TABLE categories (
 
 CREATE TABLE restaurants (
     id INTEGER PRIMARY KEY,
-    name TEXT,
+    name TEXT NOT NULL,
     description TEXT,
     location TEXT,
     category_id INTEGER REFERENCES categories(id),

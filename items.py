@@ -16,6 +16,8 @@ def get_all_classes():
     return classes
 
 def add_restaurant(name, description, location, category_name, owner_id, classes):  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    if not name:
+        raise ValueError("Ravintolalla pitää olla nimi")
     if classes is None:
         classes = []
     cat_id = None

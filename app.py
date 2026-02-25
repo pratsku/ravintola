@@ -116,12 +116,17 @@ def new_item():
 def create_item():
     require_login()
     check_csrf()
-    name = request.form.get("title")
+    name = request.form.get("title", "").strip()
+    if not name:
+        flash("VIRHE: ravintolalla pitää olla nimi")
+        return redirect("/new_item")
     if len(name) > 50:
-        abort(403)
-    description = request.form.get("description")
+        flash("VIRHE: nimen tulee olla enintään 50 merkkiä")
+        return redirect("/new_item")
+    description = request.form.get("description", "").strip()
     if len(description) > 1000:
-        abort(403)
+        flash("VIRHE: kuvauksen tulee olla enintään 1000 merkkiä")
+        return redirect("/new_item")
     location = request.form.get("location")
     category = request.form.get("category")
     try:
@@ -146,7 +151,8 @@ def create_item():
             name, description, location, category, user_id, classes
         )
     except ValueError as e:
-        return f"VIRHE: {e}"
+        flash(f"VIRHE: {e}")
+        return redirect("/new_item")
 
     item_id = db.last_insert_id()
     return redirect("/item/" + str(item_id))
@@ -200,8 +206,17 @@ def update_item():
                 abort(403)
             classes.append((class_title, class_value))
 
-    name = request.form.get("title")
-    description = request.form.get("description")
+    name = request.form.get("title", "").strip()
+    if not name:
+        flash("VIRHE: ravintolalla pitää olla nimi")
+        return redirect(f"/edit_item/{item_id}")
+    if len(name) > 50:
+        flash("VIRHE: nimen tulee olla enintään 50 merkkiä")
+        return redirect(f"/edit_item/{item_id}")
+    description = request.form.get("description", "").strip()
+    if len(description) > 1000:
+        flash("VIRHE: kuvauksen tulee olla enintään 1000 merkkiä")
+        return redirect(f"/edit_item/{item_id}")
     location = request.form.get("location")
     category = request.form.get("category")
 
