@@ -15,7 +15,6 @@ import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
-app.config.setdefault("DATABASE", "database.db")
 
 @app.before_request
 def ensure_csrf_token():
