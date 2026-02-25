@@ -134,6 +134,10 @@ def create_item():
     except (KeyError, ValueError):
         abort(403)
 
+    from users import get_user as _get_user
+    if not _get_user(user_id):
+        abort(403)
+
     all_classes = items.get_all_classes()
 
     classes = []
