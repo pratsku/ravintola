@@ -17,13 +17,6 @@ app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config.setdefault("DATABASE", "database.db")
 
-
-@app.before_request
-def ensure_csrf_token():
-    # Ensure anonymous sessions also have a CSRF token so forms work
-    if "csrf_token" not in session:
-        session["csrf_token"] = secrets.token_hex(16)
-
 @app.before_request
 def ensure_csrf_token():
     if "csrf_token" not in session:
