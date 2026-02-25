@@ -7,13 +7,16 @@
 
 <form action="/find_item" method="get">
   <p>
-      Hakusana: <input type="text" name="query" value="{{ query}}">
+    <label for="query">Hakusana:</label>
+    <input id="query" type="text" name="query" value="{{ query }}">
   </p>
   <p>
-      Sijainti: <input type="text" name="location" value="{{ location }}">
+    <label for="location">Sijainti:</label>
+    <input id="location" type="text" name="location" value="{{ location }}">
   </p>
   <p>
-      Keittiötyyppi: <input type="text" name="cuisine" value="{{ cuisine }}">
+    <label for="cuisine">Keittiötyyppi:</label>
+    <input id="cuisine" type="text" name="cuisine" value="{{ cuisine }}">
   </p>
   <input type="submit" value="Hae">
 </form>
