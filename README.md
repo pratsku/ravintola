@@ -58,7 +58,9 @@ Voit säätää `kt_lkm`- ja `ravintola_lkm_per_kt`-arvoja `seed.py`-tiedoston y
 Loin uuuden database.db ajamalla schema.sql, init.sql ja seed.py. Käynnistin Flask-kehityspalvelimen, ja vasteaikoja mittasin curl-komennoilla indeksisivuille ja sivutetuille hakusivuille (kolme ajoa per sivu).
 
 Testatut reitit:
+
 Indeksisivut: /, /5, /10
+
 Hakusivut: /find_item?query=Ravintola&page=1 ja page=3
 
 Mitattujen vasteaikojen tulokset olivat erittäin pieniä (pääosin noin 0,0016–0,0020 sekuntia). Ensimmäinen pyyntö etusivulle ja ensimmäinen hakupyyntö olivat hieman hitaampia, mutta seuraavat ajot nopeampia, todennäköisesti välimuistin ansiosta. Tulokset osoittavat, että palvelinpuolen sivutus ja tietokannan indeksit pitävät vasteajat alle 0,01 sekunttia myös 10 000 ravintolan aineistolla.
