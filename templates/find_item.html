@@ -29,5 +29,21 @@
   <li><a href="/item/{{ item.id }}">{{ item.name }}</a> {% if item.location %}- {{ item.location }}{% endif %}</li>
   {% endfor %}
 </ul>
+
+<div>
+  {% if page and page > 1 %}
+    <a href="{{ url_for('find_item', query=query, location=location, cuisine=cuisine, page=page-1) }}">&lt; Edellinen</a>
+  {% endif %}
+  Sivu {{ page|default(1) }}/{{ page_count|default(1) }}
+  {% if page_count and page < page_count %}
+    <a href="{{ url_for('find_item', query=query, location=location, cuisine=cuisine, page=page+1) }}">Seuraava &gt;</a>
+    <a href="{{ url_for('find_item', query=query, location=location, cuisine=cuisine, page=page_count) }}">Viimeinen &gt;&gt;</a>
+  {% endif %}
+</div>
+
+{% else %}
+  {% if query or location or cuisine %}
+    <p>Ei tuloksia haulle.</p>
+  {% endif %}
 {% endif %}
 {% endblock %}

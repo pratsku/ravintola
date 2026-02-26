@@ -3,7 +3,7 @@ import sqlite3
 import secrets
 
 from flask import Flask # type: ignore
-from flask import abort, redirect, render_template, request, session, flash # type: ignore
+from flask import abort, redirect, render_template, request, session, flash, url_for # type: ignore
 import markupsafe
 import math
 
@@ -41,7 +41,7 @@ def show_lines(content):
 @app.route("/")
 @app.route("/<int:page>")
 def index(page=1):
-    page_size = 10
+    page_size = 25
     total = items.count_restaurants()
     page_count = math.ceil(total / page_size) if total > 0 else 1
 
@@ -66,21 +66,36 @@ def find_item():
     query = request.args.get("query")
     location = request.args.get("location")
     cuisine = request.args.get("cuisine")
+    try:
+        page = int(request.args.get("page", 1))
+    except (TypeError, ValueError):
+        page = 1
+    
+    page_size = 25
+    total = items.count_restaurants(query=query, location=location, cuisine=cuisine)
+    page_count = math.ceil(total / page_size) if total > 0 else 1
+
+    if page < 1:
+        return redirect(url_for("find_item", query=query or "", location=location or "", cuisine=cuisine or "", page=1))
+    if page > page_count:
+        return redirect(url_for("find_item", query=query or "", location=location or "", cuisine=cuisine or "", page=page_count))
+
     if query or location or cuisine:
-        results = items.find_restaurants(
-            query=query, location=location, cuisine=cuisine
-        )
+        results = items.find_restaurants(query=query, location=location, cuisine=cuisine, page=page, page_size=page_size)
     else:
         query = ""
         location = ""
         cuisine = ""
         results = []
+
     return render_template(
         "find_item.html",
         query=query,
         location=location,
         cuisine=cuisine,
         results=results,
+        page=page,
+        page_count=page_count,
     )
 
 @app.route("/item/<int:item_id>")
